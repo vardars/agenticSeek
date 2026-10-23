@@ -20,7 +20,7 @@ class searxSearch(Tools):
         self.base_url = base_url or os.getenv("SEARXNG_BASE_URL")
         self.user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
         self.paywall_keywords = [
-            "Member-only", "access denied", "restricted content", "404", "this page is not working"
+            "member-only", "access denied", "restricted content", "404", "this page is not working"
         ]
         if not self.base_url:
             raise ValueError("SearxNG base URL must be provided either as an argument or via the SEARXNG_BASE_URL environment variable.")
@@ -80,7 +80,7 @@ class searxSearch(Tools):
         }
         data = f"q={query}&categories=general&language=auto&time_range=&safesearch=0&theme=simple".encode('utf-8')
         try:
-            response = requests.post(search_url, headers=headers, data=data, verify=False)
+            response = requests.post(search_url, headers=headers, data=data, verify=True)
             response.raise_for_status()
             html_content = response.text
             soup = BeautifulSoup(html_content, 'html.parser')

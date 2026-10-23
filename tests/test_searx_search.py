@@ -85,5 +85,38 @@ class TestSearxSearch(unittest.TestCase):
         output = "Search completed successfully"
         self.assertFalse(self.search_tool.execution_failure_check(output))
 
+    @patch('requests.get')
+    def test_link_valid_ok(self, mock_get):
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "some content"
+        mock_get.return_value = mock_response
+        self.assertEqual(self.search_tool.link_valid("http://example.com"), "Status: OK")
+
+    @patch('requests.get')
+    def test_link_valid_paywall(self, mock_get):
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "member-only"
+        mock_get.return_value = mock_response
+        self.assertEqual(self.search_tool.link_valid("http://example.com"), "Status: Possible Paywall")
+
+    @patch('requests.get')
+    def test_link_valid_404(self, mock_get):
+        mock_response = MagicMock()
+        mock_response.status_code = 404
+        mock_get.return_value = mock_response
+        self.assertEqual(self.search_tool.link_valid("http://example.com"), "Status: 404 Not Found")
+
+    @patch('requests.get')
+    def test_check_all_links(self, mock_get):
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "OK"
+        mock_get.return_value = mock_response
+        links = ["http://link1.com", "http://link2.com"]
+        results = self.search_tool.check_all_links(links)
+        self.assertEqual(results, ["Status: OK", "Status: OK"])
+
 if __name__ == '__main__':
     unittest.main()
